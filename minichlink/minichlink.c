@@ -46,6 +46,8 @@ void * MiniCHLinkInitAsDLL( struct MiniChlinkFunctions ** MCFO, const init_hints
 			dev = TryInit_B003Fun();
 		else if( strcmp( specpgm, "ardulink" ) == 0 )
 			dev = TryInit_B003Fun();
+		else if( strcmp( specpgm, "b803boot" ) == 0 )
+			dev = TryInit_UIAPduinoProMicroCH32V003V1dot4();
 	}
 	else
 	{
@@ -68,6 +70,10 @@ void * MiniCHLinkInitAsDLL( struct MiniChlinkFunctions ** MCFO, const init_hints
 		else if ( init_hints->serial_port && (dev = TryInit_Ardulink(init_hints)))
 		{
 			fprintf( stderr, "Found Ardulink Programmer\n" );
+		}
+		else if ((dev = TryInit_UIAPduinoProMicroCH32V003V1dot4()))
+		{
+			fprintf( stderr, "Found UIAPduino Pro Micro CH32V003 V1.4 Bootloader\n" );
 		}
 	}
 
@@ -676,7 +682,7 @@ help:
 	fprintf( stderr, " -t Disable 3.3V\n" );
 	fprintf( stderr, " -f Disable 5V\n" );
 	fprintf( stderr, " -c [serial port for Ardulink, try /dev/ttyACM0 or COM11 etc]\n" );
-	fprintf( stderr, " -C [specified programmer, eg. b003boot, ardulink, esp32s2chfun]\n" );
+	fprintf( stderr, " -C [specified programmer, eg. b803boot, b003boot, ardulink, esp32s2chfun]\n" );
 	fprintf( stderr, " -u Clear all code flash - by power off (also can unbrick)\n" );
 	fprintf( stderr, " -E Erase chip\n" );
 	fprintf( stderr, " -b Reboot out of Halt\n" );

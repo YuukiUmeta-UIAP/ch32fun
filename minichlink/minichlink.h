@@ -183,6 +183,7 @@ void * TryInit_ESP32S2CHFUN(void);
 void * TryInit_NHCLink042(void);
 void * TryInit_B003Fun(void);
 void * TryInit_Ardulink(const init_hints_t*);
+void * TryInit_UIAPduinoProMicroCH32V003V1dot4(void);
 
 // Returns 0 if ok, populated, 1 if not populated.
 int SetupAutomaticHighLevelFunctions( void * dev );

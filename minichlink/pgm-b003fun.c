@@ -588,7 +588,54 @@ void * TryInit_B003Fun()
 }
 
 
+void * TryInit_UIAPduinoProMicroCH32V003V1dot4()
+{
+	#define UIAPduinoProMicroCH32V003V1dot4VID 0x1209
+	#define UIAPduinoProMicroCH32V003V1dot4PID 0xb803
+	hid_init();
+	hid_device * hd = hid_open( UIAPduinoProMicroCH32V003V1dot4VID, UIAPduinoProMicroCH32V003V1dot4PID, 0); // third parameter is "serial"
+	if( !hd ) return 0;
 
+	//extern int g_hidapiSuppress;
+	//g_hidapiSuppress = 1;  // Suppress errors for this device.  (don't do this yet)
+
+	struct B003FunProgrammerStruct * eps = malloc( sizeof( struct B003FunProgrammerStruct ) );
+	memset( eps, 0, sizeof( *eps ) );
+	eps->hd = hd;
+	eps->commandplace = 1;
+
+	memset( &MCF, 0, sizeof( MCF ) );
+	MCF.WriteReg32 = 0;
+	MCF.ReadReg32 = 0;
+	MCF.FlushLLCommands = B003FunFlushLLCommands;
+	MCF.DelayUS = B003FunDelayUS;
+	MCF.Control3v3 = 0;
+	MCF.SetupInterface = B003FunSetupInterface;
+	MCF.Exit = B003FunExit;
+	MCF.HaltMode = 0;
+	MCF.VoidHighLevelState = 0;
+	MCF.PollTerminal = 0;
+
+	// These are optional. Disabling these is a good mechanismto make sure the core functions still work.
+	MCF.WriteWord = B003FunWriteWord;
+	MCF.ReadWord = B003FunReadWord;
+
+	MCF.WriteHalfWord = B003FunWriteHalfWord;
+	MCF.ReadHalfWord = B003FunReadHalfWord;
+
+	MCF.WriteByte = B003FunWriteByte;
+	MCF.ReadByte = B003FunReadByte;
+
+	MCF.WaitForDoneOp = B003FunWaitForDoneOp;
+	MCF.BlockWrite64 = B003FunBlockWrite64;
+	MCF.ReadBinaryBlob = B003FunReadBinaryBlob;
+
+	MCF.PrepForLongOp = B003FunPrepForLongOp;
+
+	MCF.HaltMode = B003FunHaltMode;
+
+	return eps;
+}
 
 
 // Utility for generating bootloader code:
