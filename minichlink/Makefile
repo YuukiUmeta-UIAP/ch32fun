@@ -1,15 +1,16 @@
 TOOLS:=minichlink minichlink.so
 
-CFLAGS:=-O0 -g3 -Wall -DCH32V003 -I.
-C_S:=minichlink.c pgm-wch-linke.c pgm-esp32s2-ch32xx.c nhc-link042.c ardulink.c serial_dev.c pgm-b003fun.c minichgdb.c
+CFLAGS:=-O0 -g3 -Wall -Wno-unused-function -DCH32V003 -I. -DMINICHLINK
+C_S:=minichlink.c pgm-wch-linke.c pgm-wch-isp.c pgm-esp32s2-ch32xx.c nhc-link042.c ardulink.c serial_dev.c pgm-b003fun.c minichgdb.c chips.c ch5xx.c
+H_S:=cmdserver.h funconfig.h hidapi.h libusb.h microgdbstub.h minichlink.h serial_dev.h terminalhelp.h
 
 # General Note: To use with GDB, gdb-multiarch
 # gdb-multilib {file}
 # target remote :2345
 
+CFLAGS_WINDOWS:=-Os -s -Wall -D_WIN32_WINNT=0x0600 -I. -Wall -DCH32V003 -DMINICHLINK
+LDFLAGS_WINDOWS:=-L. -lpthread -lusb-1.0 -lsetupapi -lws2_32
 ifeq ($(OS),Windows_NT)
-	LDFLAGS:=-L. -lpthread -lusb-1.0 -lsetupapi -lws2_32
-	CFLAGS:=-Os -s -Wall -D_WIN32_WINNT=0x0600 -DCH32V003 -I.
 	TOOLS:=minichlink.exe
 else
 	OS_NAME := $(shell uname -s | tr A-Z a-z)
@@ -18,7 +19,7 @@ else
 	endif
 	ifeq ($(OS_NAME),darwin)
 		LDFLAGS:=-lpthread -lusb-1.0 -framework CoreFoundation -framework IOKit
-		CFLAGS:=-O0 -Wall -Wno-asm-operand-widths -Wno-deprecated-declarations -Wno-deprecated-non-prototype -D__MACOSX__ -DCH32V003 -I.
+		CFLAGS:=-O0 -Wall -Wno-asm-operand-widths -Wno-deprecated-declarations -Wno-deprecated-non-prototype -D__MACOSX__ -DMINICHLINK -DCH32V003 -I.
 		INCLUDES:=$(shell pkg-config --cflags-only-I libusb-1.0)
 		LIBINCLUDES:=$(shell pkg-config --libs-only-L libusb-1.0)
 		INCS:=$(INCLUDES) $(LIBINCLUDES)
@@ -28,17 +29,17 @@ endif
 all : $(TOOLS)
 
 # will need mingw-w64-x86-64-dev gcc-mingw-w64-x86-64
-minichlink.exe : $(C_S)
-	x86_64-w64-mingw32-gcc -o $@ $^ $(LDFLAGS) $(CFLAGS)
+minichlink.exe : $(C_S) $(H_S) Makefile
+	x86_64-w64-mingw32-gcc -o $@ $(C_S) $(LDFLAGS_WINDOWS) $(CFLAGS_WINDOWS)
 
-minichlink : $(C_S)
-	gcc -o $@ $^ $(LDFLAGS) $(CFLAGS) $(INCS)
+minichlink : $(C_S) $(H_S) Makefile
+	gcc -o $@ $(C_S) $(LDFLAGS) $(CFLAGS) $(INCS)
 
-minichlink.so : $(C_S)
-	gcc -o $@ $^ $(LDFLAGS) $(CFLAGS) $(INCS) -shared -fPIC
+minichlink.so : $(C_S) $(H_S) Makefile
+	gcc -o $@ $(C_S) $(LDFLAGS) $(CFLAGS) $(INCS) -shared -fPIC
 
-minichlink.dll : $(C_S)
-	x86_64-w64-mingw32-gcc -o $@ $^ $(LDFLAGS) $(CFLAGS) $(INCS) -shared -DMINICHLINK_AS_LIBRARY
+minichlink.dll : $(C_S) $(H_S) Makefile
+	x86_64-w64-mingw32-gcc -o $@ $(C_S) $(LDFLAGS_WINDOWS) $(CFLAGS_WINDOWS) $(INCS) -shared -DMINICHLINK_AS_LIBRARY
 
 install_udev_rules :
 	cp 99-minichlink.rules /etc/udev/rules.d/
@@ -50,4 +51,4 @@ inspect_bootloader : minichlink
 	riscv64-unknown-elf-objdump -S -D test.bin -b binary -m riscv:rv32 | less
 
 clean :
-	rm -rf $(TOOLS) 
+	rm -rf $(TOOLS) minichlink.exe

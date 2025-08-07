@@ -1,10 +1,11 @@
 // Small example showing how to use the USB HS interface of the CH32V30x
 // A composite HID device + A bulk in and out.
 
-#include "ch32v003fun.h"
+#include "ch32fun.h"
 #include <stdio.h>
 #include <string.h>
-#include "hsusb.h"
+#include "hsusb_v30x.h"
+#include "hsusb_v30x.c" // Normally would be in ADDITIONAL_C_FILES, but the PIO build system doesn't currently understand that.
 
 uint32_t count;
 

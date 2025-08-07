@@ -1,29 +1,34 @@
-#include "ch32v003fun.h"
+#include "ch32fun.h"
 #include <stdio.h>
+
+// use defines to make more meaningful names for our GPIO pins
+#define PIN_1 PD0
+#define PIN_K PD4
+#define PIN_BOB PD6
+#define PIN_KEVIN PC0
 
 int main()
 {
 	SystemInit();
 
-	// Enable GPIOs
-	funGpioInitAll();
+	funGpioInitAll(); // Enable GPIOs
 	
-	funPinMode( PD0, GPIO_Speed_10MHz | GPIO_CNF_OUT_PP );
-	funPinMode( PD4, GPIO_Speed_10MHz | GPIO_CNF_OUT_PP );
-	funPinMode( PD6, GPIO_Speed_10MHz | GPIO_CNF_OUT_PP );
-	funPinMode( PC0, GPIO_Speed_10MHz | GPIO_CNF_OUT_PP );
+	funPinMode( PIN_1,     GPIO_Speed_10MHz | GPIO_CNF_OUT_PP ); // Set PIN_1 to output
+	funPinMode( PIN_K,     GPIO_Speed_10MHz | GPIO_CNF_OUT_PP ); // Set PIN_K to output
+	funPinMode( PIN_BOB,   GPIO_Speed_10MHz | GPIO_CNF_OUT_PP ); // Set PIN_BOB to output
+	funPinMode( PIN_KEVIN, GPIO_Speed_10MHz | GPIO_CNF_OUT_PP ); // Set PIN_KEVIN to output
 
 	while(1)
 	{
-		funDigitalWrite( PD0, FUN_HIGH );
-		funDigitalWrite( PD4, FUN_HIGH );
-		funDigitalWrite( PD6, FUN_HIGH );
-		funDigitalWrite( PC0, FUN_HIGH );
+		funDigitalWrite( PIN_1,     FUN_HIGH ); // Turn on PIN_1
+		funDigitalWrite( PIN_K,     FUN_HIGH ); // Turn on PIN_K
+		funDigitalWrite( PIN_BOB,   FUN_HIGH ); // Turn on PIN_BOB
+		funDigitalWrite( PIN_KEVIN, FUN_HIGH ); // Turn on PIN_KEVIN
 		Delay_Ms( 250 );
-		funDigitalWrite( PD0, FUN_LOW );
-		funDigitalWrite( PD4, FUN_LOW );
-		funDigitalWrite( PD6, FUN_LOW );
-		funDigitalWrite( PC0, FUN_LOW );
+		funDigitalWrite( PIN_1,     FUN_LOW );  // Turn off PIN_1
+		funDigitalWrite( PIN_K,     FUN_LOW );  // Turn off PIN_K
+		funDigitalWrite( PIN_BOB,   FUN_LOW );  // Turn off PIN_BOB
+		funDigitalWrite( PIN_KEVIN, FUN_LOW );  // Turn off PIN_KEVIN
 		Delay_Ms( 250 );
 	}
 }

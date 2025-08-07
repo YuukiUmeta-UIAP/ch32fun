@@ -1,7 +1,7 @@
 /* Small example showing how to use the SWIO programming pin to 
    do printf through the debug interface */
 
-#include "ch32v003fun.h"
+#include "ch32fun.h"
 #include <stdio.h>
 
 uint32_t count;
@@ -85,7 +85,8 @@ int main()
 {
 	SystemInit();
 
-	WaitForDebuggerToAttach();
+	// Wait 60s for debugger to attach
+	(void)WaitForDebuggerToAttach(60*1000);
 
 	// Enable GPIOs
 	RCC->APB2PCENR |= RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOC;

@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <errno.h>
 
 // We borrow the combined hidapi.c from minichlink.
 //
 // This is for total perf testing.
+//
+// for this setup, this is typical:
+//  950.274 KB/s PC->203 / 974.453 KB/s 203->PC
 
 #include "hidapi.c"
 
@@ -49,7 +53,7 @@ int main()
 		dSendTotal += OGGetAbsoluteTime() - dStartSend;
 		if( r != sizeof(buffer0) )
 		{
-			fprintf( stderr, "Warning: HID Send fault (%d) Retrying\n", r );
+			fprintf( stderr, "Warning: HID Send fault (%d) (%s) Retrying\n", r, strerror(errno) );
 			retries++;
 			if( retries > 10 ) break;
 			goto retrysend;
@@ -81,7 +85,7 @@ int main()
 		
 		if( dStartRecv - dSecond > 1.0 )
 		{
-			printf( "\n%2.3f KB/s PC->003 / %2.3f KB/s 003->PC\n", j * .249 / dSendTotal, j * .249 / dRecvTotal );
+			printf( "\n%2.3f KB/s PC->203 / %2.3f KB/s 203->PC\n", j * .249 / dSendTotal, j * .249 / dRecvTotal );
 			dSecond++;
 		}
 	}

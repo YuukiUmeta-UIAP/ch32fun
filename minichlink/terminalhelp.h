@@ -94,10 +94,11 @@ static int ReadKBByte()
 #include <signal.h>
 #include <sys/time.h>
 
-static void CtrlC()
+static void CtrlC(int signo)
 {
-	fprintf( stderr, "Minichlink Closing\n" );
+	fprintf( stderr, "\nMinichlink Closing\n" );
 	ResetKeyboardInput();
+	(void)signo;
 	exit( 0 );
 }
 

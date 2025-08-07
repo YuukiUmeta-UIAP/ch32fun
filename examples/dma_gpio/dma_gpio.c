@@ -1,15 +1,20 @@
 // DMA GPIO Output Example - this example shows
 // how you can output 8 pins all simultaneously
-// with a planned bit pattern at 2MSamples/s.
+// with a dynamic bit pattern at 2MSamples/s. As the
+// sampling rate increases (decreasing TIM1->ATRLR),
+// the jitter due to the CPU and DMA accessing SRAM
+// simultaneously can be observed by contrasting the
+// timing of PC0-7 against the timer output on PD2.
 //
 // It outputs a pattern of repeating 01010101 and
 // 000000 alternating "frames".
 //
-// The interrupt fires once at the beginning and
-// once at the end.
+// The interrupt that updates the buffer
+// fires once in the middle of the transfer and once
+// at the end.
 //
 
-#include "ch32v003fun.h"
+#include "ch32fun.h"
 #include <stdio.h>
 
 volatile uint32_t count;
@@ -18,7 +23,7 @@ volatile uint32_t count;
 uint8_t memory_buffer[1024];
 
 void DMA1_Channel2_IRQHandler( void ) __attribute__((interrupt)) __attribute__((section(".srodata")));
-void DMA1_Channel2_IRQHandler( void ) 
+void DMA1_Channel2_IRQHandler( void )
 {
 	int i;
 	static int frameno;
@@ -38,7 +43,7 @@ void DMA1_Channel2_IRQHandler( void )
 			}
 			frameno++;
 		}
-		
+
 		// Gets called halfway through the frame
 		if( intfr & DMA1_IT_HT2 )
 		{
@@ -102,7 +107,7 @@ int main()
 	DMA1_Channel2->CNTR = sizeof(memory_buffer) / sizeof(memory_buffer[0]);
 	DMA1_Channel2->MADDR = (uint32_t)memory_buffer;
 	DMA1_Channel2->PADDR = (uint32_t)&GPIOC->OUTDR; // This is the output register for out buffer.
-	DMA1_Channel2->CFGR = 
+	DMA1_Channel2->CFGR =
 		DMA_CFGR1_DIR |                      // MEM2PERIPHERAL
 		DMA_CFGR1_PL |                       // High priority.
 		0 |                                  // 8-bit memory
@@ -127,7 +132,7 @@ int main()
 
 	// Timer 1 setup.
 	// Timer 1 is what will trigger the DMA, Channel 2 engine.
-	TIM1->PSC = 0x0000;                      // Prescaler 
+	TIM1->PSC = 0x0000;                      // Prescaler
 	TIM1->ATRLR = 11;                        // Auto Reload - sets period (48MHz / (11+1) = 4MHz)
 	TIM1->SWEVGR = TIM_UG | TIM_TG;          // Reload immediately + Trigger DMA
 	TIM1->CCER = TIM_CC1E | TIM_CC1P;        // Enable CH1 output, positive pol
