@@ -915,7 +915,7 @@ int ESPCH5xxWriteBinaryBlob(void * dev, uint32_t address_to_write, uint32_t blob
 		goto end;
 	}
 
-	fprintf(stderr, "Done writing\n");
+	fprintf(stderr, "\nDone writing\n");
 end:
 	free(start_pad);
 	free(end_pad);

@@ -1681,6 +1681,24 @@ typedef enum
 #define SLEEP_RTC_MAX_TIME  (RTC_MAX_COUNT - 1000 * 1000 * 30)
 #define WAKE_UP_RTC_MAX_TIME US_TO_RTC(1600)
 
+#define LL_TX_POWER_MINUS_25_DBM       0x01
+#define LL_TX_POWER_MINUS_20_DBM       0x02
+#define LL_TX_POWER_MINUS_15_DBM       0x03
+#define LL_TX_POWER_MINUS_10_DBM       0x05
+#define LL_TX_POWER_MINUS_8_DBM        0x07
+#define LL_TX_POWER_MINUS_5_DBM        0x0A
+#define LL_TX_POWER_MINUS_3_DBM        0x0C
+#define LL_TX_POWER_MINUS_1_DBM        0x10
+#define LL_TX_POWER_0_DBM              0x12
+#define LL_TX_POWER_1_DBM              0x15
+#define LL_TX_POWER_2_DBM              0x18
+#define LL_TX_POWER_3_DBM              0x1B
+#define LL_TX_POWER_4_DBM              0x1F
+#define LL_TX_POWER_5_DBM              0x25
+#define LL_TX_POWER_6_DBM              0x2D
+#define LL_TX_POWER_7_DBM              0x3B
+
+
 RV_STATIC_INLINE void LSIEnable() 
 {
 	SYS_SAFE_ACCESS(
@@ -1783,6 +1801,7 @@ RV_STATIC_INLINE void LowPowerSleep(uint32_t cyc, uint16_t power_plan)
   	   R16_POWER_PLAN = RB_PWR_PLAN_EN | RB_PWR_CORE | power_plan | (1<<12);
 	);
 	
+	NVIC->SCTLR &= ~(1 << 3); // wfi
 	asm volatile ("wfi\nnop\nnop" );
 
 	#if ( CLK_SOURCE_CH5XX == CLK_SOURCE_PLL_75MHz ) || ( CLK_SOURCE_CH5XX == CLK_SOURCE_PLL_100MHz )

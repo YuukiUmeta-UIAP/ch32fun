@@ -1501,6 +1501,20 @@ typedef enum
 #define R8_U2EP7_T_LEN      (*((vu8*)0x4000846C))  // USB2 endpoint 7 transmittal length
 #define R8_U2EP7_CTRL       (*((vu8*)0x4000846E))  // USB2 endpoint 7 control
 
+#define LL_TX_POWER_MINUS_16_DBM       0x01
+#define LL_TX_POWER_MINUS_12_DBM       0x02
+#define LL_TX_POWER_MINUS_8_DBM        0x04
+#define LL_TX_POWER_MINUS_5_DBM        0x07
+#define LL_TX_POWER_MINUS_3_DBM        0x09
+#define LL_TX_POWER_MINUS_1_DBM        0x0B
+#define LL_TX_POWER_0_DBM              0x0D
+#define LL_TX_POWER_1_DBM              0x0F
+#define LL_TX_POWER_2_DBM              0x13
+#define LL_TX_POWER_3_DBM              0x17
+#define LL_TX_POWER_4_DBM              0x1D
+#define LL_TX_POWER_5_DBM              0x29
+#define LL_TX_POWER_6_DBM              0x3D
+
 RV_STATIC_INLINE void jump_isprom() {
 	memcpy((void*)ISPROM_IN_RAM_ADDRESS, (void*)(ISPROM_ADDRESS + ISPROM_START_OFFSET), ISPROM_SIZE); // copy bootloader to ram
 	*(int16_t*)(ISPROM_BOOTBUTTON_CHECK_ADDRESS + 0xe) = 0x4505; // li a0, 1, patch PB22 detection to always return true

@@ -81,9 +81,10 @@ struct MiniChlinkFunctions
 
 	int (*WriteByte)( void * dev, uint32_t address_to_write, uint8_t data );
 	int (*ReadByte)( void * dev, uint32_t address_to_read, uint8_t * data );
-  int (*GetUUID)( void * dev, uint8_t * buffer );
-  int (*SetClock)( void * dev, uint32_t clock );
-  int (*EnableDebug)( void * dev, uint8_t disable );
+	int (*GetUUID)( void * dev, uint8_t * buffer );
+	int (*SetClock)( void * dev, uint32_t clock );
+	int (*EnableDebug)( void * dev, uint8_t disable );
+	int (*ResetInterface)( void * dev );
 };
 
 /** If you are writing a driver, the minimal number of functions you can implement are:

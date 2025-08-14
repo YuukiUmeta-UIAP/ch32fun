@@ -1452,6 +1452,20 @@ typedef enum
 #define R8_UEP7_T_LEN       (*((vu8*)0x4000806C))  // endpoint 7 transmittal length
 #define R8_UEP7_CTRL        (*((vu8*)0x4000806E))  // endpoint 7 control
 
+#define LL_TX_POWER_MINUS_20_DBM       0x01
+#define LL_TX_POWER_MINUS_15_DBM       0x03
+#define LL_TX_POWER_MINUS_10_DBM       0x05
+#define LL_TX_POWER_MINUS_8_DBM        0x07
+#define LL_TX_POWER_MINUS_5_DBM        0x0B
+#define LL_TX_POWER_MINUS_3_DBM        0x0F
+#define LL_TX_POWER_MINUS_1_DBM        0x13
+#define LL_TX_POWER_0_DBM              0x15
+#define LL_TX_POWER_1_DBM              0x1B
+#define LL_TX_POWER_2_DBM              0x23
+#define LL_TX_POWER_3_DBM              0x2B
+#define LL_TX_POWER_4_DBM              0x3B
+
+
 RV_STATIC_INLINE void LSIEnable() {
 	SYS_SAFE_ACCESS(
 		R8_CK32K_CONFIG &= ~(RB_CLK_OSC32K_XT | RB_CLK_XT32K_PON); // turn off LSE

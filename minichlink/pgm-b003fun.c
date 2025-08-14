@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "chips.h"
 #include "../ch32fun/ch32fun.h"
 
 //#define DEBUG_B003
@@ -66,10 +66,10 @@ static const unsigned char word_wise_write_blob[] = { // size and address must b
 };
 
 static const unsigned char write64_flash[] = { // size and address must be aligned by 4.
-  0x13, 0x07, 0x45, 0x03, 0x0c, 0x43, 0x13, 0x86, 0x05, 0x04, 0x5c, 0x43,
-  0x8c, 0xc7, 0x14, 0x47, 0x94, 0xc1, 0xb7, 0x06, 0x05, 0x00, 0xd4, 0xc3,
-  0x94, 0x41, 0x91, 0x05, 0x11, 0x07, 0xe3, 0xc8, 0xc5, 0xfe, 0xc1, 0x66,
-  0x93, 0x86, 0x06, 0x04, 0xd4, 0xc3, 0xfd, 0x56, 0x14, 0xc1, 0x82, 0x80
+	0x13, 0x07, 0x45, 0x03, 0x0c, 0x43, 0x13, 0x86, 0x05, 0x04, 0x5c, 0x43,
+	0x8c, 0xc7, 0x14, 0x47, 0x94, 0xc1, 0xb7, 0x06, 0x05, 0x00, 0xd4, 0xc3,
+	0x94, 0x41, 0x91, 0x05, 0x11, 0x07, 0xe3, 0xc8, 0xc5, 0xfe, 0xc1, 0x66,
+	0x93, 0x86, 0x06, 0x04, 0xd4, 0xc3, 0xfd, 0x56, 0x14, 0xc1, 0x82, 0x80
 };
 
 static const unsigned char half_wise_write_blob[] = { // size and address must be aligned by 2
@@ -117,7 +117,7 @@ static const unsigned char run_app_blob[] = {
 	0x63,0x16,0xf7,0x00,  // bne    a4,a5,.L2       - if xor is valid
 	0x33,0x87,0xb6,0x00,  // add    a4, a3, a1      - make absolute address of reboot function an jump
 	0x67,0x00,0x07,0x00,  // jr     a4              - jump to it
-  /* else - means that we didn't find a reboot function address
+	/* else - means that we didn't find a reboot function address
 	and need to send the blob to do a reboot
 .L2:                                                - Same sequence as in "Run app blob (old)"*/
 	0xb7,0x27,0x02,0x40,  // li     a5,1073881088
@@ -211,7 +211,7 @@ resend:
 			goto resend;
 		}
 	}
-        
+
 	if (eps->no_get_report) return r;
 
 	int timeout = 0;
@@ -457,10 +457,33 @@ static int InternalB003FunBoot( void * dev )
 static int B003FunSetupInterface( void * dev )
 {
 	struct B003FunProgrammerStruct * eps = (struct B003FunProgrammerStruct*) dev;
+	struct InternalState * iss = (struct InternalState*)(((struct B003FunProgrammerStruct*)eps)->internal);
+	iss->target_chip = &ch32v003;
+	iss->target_chip_type = CHIP_CH32V003;
+	iss->flash_size = 16;
+	iss->ram_base = iss->target_chip->ram_base;
+	iss->ram_size = iss->target_chip->ram_size;
+	iss->sector_size = iss->target_chip->sector_size;
 	printf( "Halting Boot Countdown\n" );
 	ResetOp( eps );
 	WriteOpArb( eps, halt_wait_blob, sizeof(halt_wait_blob) );
 	if( CommitOp( eps ) ) return -5;
+	
+	uint32_t one;
+	int two;
+	uint8_t read_protection;
+	MCF.ReadWord( dev, 0x4002201c, &one );
+	MCF.ReadWord( dev, 0x40022020, (uint32_t*)&two );
+	
+	if( (one & 2) || two != -1 ) read_protection = 1;
+
+	uint8_t uuid[8];
+	fprintf( stderr, "Detected %s\n", iss->target_chip->name_str );
+	fprintf( stderr, "Flash Storage: %d kB\n", iss->flash_size );
+	if( MCF.GetUUID( dev, uuid ) ) fprintf( stderr, "Couldn't read UUID\n" );
+	else fprintf( stderr, "Part UUID: %02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x\n", uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5], uuid[6], uuid[7] );
+	// fprintf( stderr, "Part Type: %02x-%02x-%02x-%02x\n", part_type[3], part_type[2], part_type[1], part_type[0] );
+	fprintf( stderr, "Read protection: %s\n", (read_protection > 0)?"enabled":"disabled" );
 	return 0;
 }
 
@@ -634,6 +657,19 @@ int B003PollTerminal( void * dev, uint8_t * buffer, int maxlen, uint32_t leavefl
 	}
 }
 
+static int B003FunGetUUID(void * dev, uint8_t * buffer)
+{
+	int ret = 0;
+	uint8_t local_buffer[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+	ret |= MCF.ReadWord( dev, 0x1ffff7e8, (uint32_t*)local_buffer );			
+	ret |= MCF.ReadWord( dev, 0x1ffff7ec, (uint32_t*)(local_buffer + 4) );
+	
+	*((uint32_t*)buffer) = local_buffer[0]<<24|local_buffer[1]<<16|local_buffer[2]<<8|local_buffer[3];
+	*(((uint32_t*)buffer)+1) = local_buffer[4]<<24|local_buffer[5]<<16|local_buffer[6]<<8|local_buffer[7];
+	return ret;
+}
+
 void * TryInit_B003Fun(uint32_t id)
 {
 	hid_init();
@@ -661,7 +697,7 @@ void * TryInit_B003Fun(uint32_t id)
 			// hd = hid_open( id>>16, id&0xFFFF, 0);
 			if (!hd) return 0;
 		}
-  }
+	}
 
 	//extern int g_hidapiSuppress;
 	//g_hidapiSuppress = 1;  // Suppress errors for this device.  (don't do this yet)
@@ -670,7 +706,6 @@ void * TryInit_B003Fun(uint32_t id)
 	memset( eps, 0, sizeof( *eps ) );
 	eps->hd = hd;
 	eps->commandplace = 1;
-
 	memset( &MCF, 0, sizeof( MCF ) );
 	MCF.WriteReg32 = 0;
 	MCF.ReadReg32 = 0;
@@ -701,6 +736,8 @@ void * TryInit_B003Fun(uint32_t id)
 	MCF.PrepForLongOp = B003FunPrepForLongOp;
 
 	MCF.HaltMode = B003FunHaltMode;
+
+	MCF.GetUUID = B003FunGetUUID;
 
 	return eps;
 }

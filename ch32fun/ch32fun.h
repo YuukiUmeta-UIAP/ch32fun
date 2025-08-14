@@ -355,9 +355,9 @@ typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;
 typedef enum {RESET = 0, SET = !RESET} FlagStatus, ITStatus;
 
 #define   RV_STATIC_INLINE  static  inline
-#endif // __ASSEMBLER__
 
 #include <string.h> // for memcpy in ch5xx hw.h files
+#endif // ifndef __ASSEMBLER__
 
 #if FUNCONF_ISR_IN_RAM
 	#define VECTOR_HANDLER_SECTION ".data.vector_handler"

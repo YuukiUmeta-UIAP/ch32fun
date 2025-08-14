@@ -292,6 +292,14 @@ int LEFlushLLCommands( void * dev )
 	return 0;
 }
 
+int LEResetInterface( void * d )
+{
+	libusb_device_handle * dev = ((struct LinkEProgrammerStruct*)d)->devh;
+	wch_link_command( dev, "\x81\x0d\x01\xff", 4, 0, 0, 0 );
+	wch_link_command( dev, "\x81\x0d\x01\x01", 4, 0, 0, 0 );
+	return 0;
+}
+
 static int LESetupInterface( void * d )
 {
 	libusb_device_handle * dev = ((struct LinkEProgrammerStruct*)d)->devh;
@@ -627,6 +635,7 @@ void * TryInit_WCHLinkE()
 	MCF.WriteReg32 = LEWriteReg32;
 	MCF.FlushLLCommands = LEFlushLLCommands;
 
+	MCF.ResetInterface = LEResetInterface;
 	MCF.SetupInterface = LESetupInterface;
 	MCF.Control3v3 = LEControl3v3;
 	MCF.Control5v = LEControl5v;
@@ -1040,5 +1049,3 @@ static int LEWriteBinaryBlob( void * d, uint32_t address_to_write, uint32_t len,
 
 	return 0;
 }
-
-

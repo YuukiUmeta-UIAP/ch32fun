@@ -2038,7 +2038,7 @@ typedef struct{
 #define CAN_TXMI0R_TXRQ                         ((uint32_t)0x00000001) /* Transmit Mailbox Request */
 #define CAN_TXMI0R_RTR                          ((uint32_t)0x00000002) /* Remote Transmission Request */
 #define CAN_TXMI0R_IDE                          ((uint32_t)0x00000004) /* Identifier Extension */
-#define CAN_TXMI0R_EXID                         ((uint32_t)0x001FFFF8) /* Extended Identifier */
+#define CAN_TXMI0R_EXID                         ((uint32_t)0xFFFFFFF8) /* Extended Identifier */
 #define CAN_TXMI0R_STID                         ((uint32_t)0xFFE00000) /* Standard Identifier or Extended Identifier */
 
 /******************  Bit definition for CAN_TXMDT0R register  *******************/
@@ -2062,7 +2062,7 @@ typedef struct{
 #define CAN_TXMI1R_TXRQ                         ((uint32_t)0x00000001) /* Transmit Mailbox Request */
 #define CAN_TXMI1R_RTR                          ((uint32_t)0x00000002) /* Remote Transmission Request */
 #define CAN_TXMI1R_IDE                          ((uint32_t)0x00000004) /* Identifier Extension */
-#define CAN_TXMI1R_EXID                         ((uint32_t)0x001FFFF8) /* Extended Identifier */
+#define CAN_TXMI1R_EXID                         ((uint32_t)0xFFFFFFF8) /* Extended Identifier */
 #define CAN_TXMI1R_STID                         ((uint32_t)0xFFE00000) /* Standard Identifier or Extended Identifier */
 
 /*******************  Bit definition for CAN_TXMDT1R register  ******************/
@@ -2086,7 +2086,7 @@ typedef struct{
 #define CAN_TXMI2R_TXRQ                         ((uint32_t)0x00000001) /* Transmit Mailbox Request */
 #define CAN_TXMI2R_RTR                          ((uint32_t)0x00000002) /* Remote Transmission Request */
 #define CAN_TXMI2R_IDE                          ((uint32_t)0x00000004) /* Identifier Extension */
-#define CAN_TXMI2R_EXID                         ((uint32_t)0x001FFFF8) /* Extended identifier */
+#define CAN_TXMI2R_EXID                         ((uint32_t)0xFFFFFFF8) /* Extended identifier */
 #define CAN_TXMI2R_STID                         ((uint32_t)0xFFE00000) /* Standard Identifier or Extended Identifier */
 
 /*******************  Bit definition for CAN_TXMDT2R register  ******************/
@@ -2109,7 +2109,7 @@ typedef struct{
 /*******************  Bit definition for CAN_RXMI0R register  *******************/
 #define CAN_RXMI0R_RTR                          ((uint32_t)0x00000002) /* Remote Transmission Request */
 #define CAN_RXMI0R_IDE                          ((uint32_t)0x00000004) /* Identifier Extension */
-#define CAN_RXMI0R_EXID                         ((uint32_t)0x001FFFF8) /* Extended Identifier */
+#define CAN_RXMI0R_EXID                         ((uint32_t)0xFFFFFFF8) /* Extended Identifier */
 #define CAN_RXMI0R_STID                         ((uint32_t)0xFFE00000) /* Standard Identifier or Extended Identifier */
 
 /*******************  Bit definition for CAN_RXMDT0R register  ******************/
@@ -2132,7 +2132,7 @@ typedef struct{
 /*******************  Bit definition for CAN_RXMI1R register  *******************/
 #define CAN_RXMI1R_RTR                          ((uint32_t)0x00000002) /* Remote Transmission Request */
 #define CAN_RXMI1R_IDE                          ((uint32_t)0x00000004) /* Identifier Extension */
-#define CAN_RXMI1R_EXID                         ((uint32_t)0x001FFFF8) /* Extended identifier */
+#define CAN_RXMI1R_EXID                         ((uint32_t)0xFFFFFFF8) /* Extended identifier */
 #define CAN_RXMI1R_STID                         ((uint32_t)0xFFE00000) /* Standard Identifier or Extended Identifier */
 
 /*******************  Bit definition for CAN_RXMDT1R register  ******************/
@@ -8224,6 +8224,19 @@ typedef struct
 #define PD13 61
 #define PD14 62
 #define PD15 63
+
+#define LL_TX_POWER_MINUS_18_DBM       0x01
+#define LL_TX_POWER_MINUS_10_DBM       0x03
+#define LL_TX_POWER_MINUS_5_DBM        0x05
+#define LL_TX_POWER_MINUS_3_DBM        0x07
+#define LL_TX_POWER_0_DBM              0x09
+#define LL_TX_POWER_1_DBM              0x0B
+#define LL_TX_POWER_2_DBM              0x0D
+#define LL_TX_POWER_3_DBM              0x11
+#define LL_TX_POWER_4_DBM              0x15
+#define LL_TX_POWER_5_DBM              0x1B
+#define LL_TX_POWER_6_DBM              0x25
+#define LL_TX_POWER_7_DBM              0x3F
 
 /*
  * This file contains various parts of the official WCH EVT Headers which

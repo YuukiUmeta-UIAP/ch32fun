@@ -97,6 +97,7 @@ int ArdulinkExit(void * dev)
 	return 0;
 }
 
+extern int DefaultSetupInterface( void * dev );
 int ArdulinkSetupInterface( void * dev )
 {
 	char first;
@@ -116,7 +117,7 @@ int ArdulinkSetupInterface( void * dev )
 	}
 	serial_dev_flush_rx(&((ardulink_ctx_t*)dev)->serial);
 
-	return 0;
+	return DefaultSetupInterface( dev );
 }
 
 void * TryInit_Ardulink(const init_hints_t* hints)

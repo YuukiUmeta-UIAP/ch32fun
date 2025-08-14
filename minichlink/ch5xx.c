@@ -665,7 +665,7 @@ int ch5xx_write_flash_using_microblob2(void * dev, uint32_t start_addr, uint8_t*
 	
 	MCF.WriteReg32(dev, DMDATA1, 1);
 	MCF.WriteReg32(dev, DMCONTROL, 0x40000001);
-	if (iss->target_chip_type == CHIP_CH570) MCF.WriteReg32(dev, DMCONTROL, 0x40000001);
+	if (iss->target_chip_type == CHIP_CH570 || iss->target_chip_type == CHIP_CH585) MCF.WriteReg32(dev, DMCONTROL, 0x40000001);
 
 	MCF.WriteReg32(dev, DMDATA0, 0);
 	MCF.WriteReg32(dev, DMDATA1, 0);
@@ -712,7 +712,6 @@ int ch5xx_write_flash_using_microblob2(void * dev, uint32_t start_addr, uint8_t*
 			} while(dmdata0);
 		}
 	}
-	fprintf(stderr, "\n");
 	r = 0;
 	MCF.WriteReg32(dev, DMDATA1, dmdata0_offset); // Signal to microblob that we're done writing
 	MCF.DelayUS(dev,10000);
@@ -785,7 +784,6 @@ int ch5xx_write_flash(void * dev, uint32_t start_addr, uint8_t* data, uint32_t l
 		len -= block;
 		start_addr += block;
 	}
-	fprintf(stderr, "\n");
 
 	ch5xx_flash_close(dev);
 	
@@ -1175,7 +1173,7 @@ int CH5xxWriteBinaryBlob(void * dev, uint32_t address_to_write, uint32_t blob_si
 		goto end;
 	}
 
-	fprintf(stderr, "Done writing\n");
+	fprintf(stderr, "\nDone writing\n");
 end:
 	free(start_pad);
 	free(end_pad);

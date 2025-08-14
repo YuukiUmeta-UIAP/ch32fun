@@ -7,7 +7,6 @@
 #else
 #define LED PA8
 #endif
-#define LL_TX_POWER_0_DBM 0x12
 #define PHY_MODE          PHY_1M
 
 #define REPORT_ALL 1
