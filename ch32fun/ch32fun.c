@@ -1633,7 +1633,13 @@ void SystemInit( void )
 //#define BASE_CTLR	(((FUNCONF_HSITRIM) << 3) | HSEBYP | RCC_CSS)	// disable HSI in HSE modes
 
 	// Flash latency settings.
-#if defined(CH32V00x)
+#if defined(CH32V003)
+	#if FUNCONF_SYSTEM_CORE_CLOCK > 25000000
+		FLASH->ACTLR = FLASH_ACTLR_LATENCY_1;               // +1 Cycle Latency
+	#else
+		FLASH->ACTLR = FLASH_ACTLR_LATENCY_0;               // +0 Cycle Latency
+	#endif
+#elif defined(CH32V00x)
 	// Per TRM
 	#if FUNCONF_SYSTEM_CORE_CLOCK > 25000000
 		FLASH->ACTLR = FLASH_ACTLR_LATENCY_2;
@@ -1644,12 +1650,6 @@ void SystemInit( void )
 	#endif
 #elif defined(CH32X03x)
 	FLASH->ACTLR = FLASH_ACTLR_LATENCY_2;                   // +2 Cycle Latency (Recommended per TRM)
-#elif defined(CH32V003)
-	#if FUNCONF_SYSTEM_CORE_CLOCK > 25000000
-		FLASH->ACTLR = FLASH_ACTLR_LATENCY_1;               // +1 Cycle Latency
-	#else
-		FLASH->ACTLR = FLASH_ACTLR_LATENCY_0;               // +0 Cycle Latency
-	#endif
 #endif
 
 #ifdef CH5xx // has no HSI except ch584/5
